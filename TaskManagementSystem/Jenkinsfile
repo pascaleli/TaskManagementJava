@@ -1,44 +1,43 @@
 pipeline {
-    agent any  // Runs on any available agent
+    agent any
 
     environment {
         DOCKER_IMAGE = 'maven:3.8.6-openjdk-17'
     }
 
+    triggers {
+        cron('H/2 * * * *') // Runs every 2 minutes
+    }
+
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git' // Update with your repo
+                git 'https://github.com/pascaleli/TaskManagementJava.git'
             }
         }
 
-        stage('Build and Test') {
-            agent {
-                docker {
-                    image "${DOCKER_IMAGE}"  // Use Maven + JDK Docker image
-                    args '-v $PWD:/workspace -w /workspace' // Mount workspace
-                }
-            }
+        stage('Build') {
             steps {
-                script {
-                    sh 'mvn clean test'  // Run your Spring Boot tests
+                dir('TaskManagementSystem') {
+                    sh 'mvn clean package'
                 }
             }
         }
 
-        stage('Publish Test Reports') {
+        stage('Test') {
             steps {
-                junit '**/target/surefire-reports/*.xml'  // Parse JUnit XML test results
+                dir('TaskManagementSystem') {
+                    sh 'mvn test'
+                }
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
-        }
-        failure {
-            echo 'Tests failed! Check the logs.'
+            dir('TaskManagementSystem') {
+                junit '**/target/surefire-reports/*.xml'
+            }
         }
     }
 }
