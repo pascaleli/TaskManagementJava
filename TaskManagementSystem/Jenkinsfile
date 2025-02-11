@@ -12,22 +12,32 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/pascaleli/TaskManagementJava.git'
+                script {
+                    echo 'Cloning repository...'
+                    git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                dir('TaskManagementSystem') {
-                    sh 'mvn clean package'
+                script {
+                    echo 'Moving into project directory: TaskManagementSystem'
+                    dir('TaskManagementSystem') {
+                        echo 'Running Maven Build...'
+                        sh 'mvn clean package'
+                    }
                 }
             }
         }
 
         stage('Test') {
             steps {
-                dir('TaskManagementSystem') {
-                    sh 'mvn test'
+                script {
+                    echo 'Running tests...'
+                    dir('TaskManagementSystem') {
+                        sh 'mvn test'
+                    }
                 }
             }
         }
@@ -35,8 +45,11 @@ pipeline {
 
     post {
         always {
-            dir('TaskManagementSystem') {
-                junit '**/target/surefire-reports/*.xml'
+            script {
+                echo 'Publishing test results...'
+                dir('TaskManagementSystem') {
+                    junit '**/target/surefire-reports/*.xml'
+                }
             }
         }
     }
