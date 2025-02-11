@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'maven:3.8.6-openjdk-17'
+    }
+
+    triggers {
+        cron('H/2 * * * *') // Runs every 2 minutes
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                script {
+                    echo 'Cloning repository...'
+                    git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git'
+                }
+            }
+        }
+
+        stage('Build') {
+            steps {
+                script {
+                    echo 'Moving into project directory: TaskManagementSystem'
+                    dir('TaskManagementSystem') {
+                        echo 'Running Maven Build...'
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    echo 'Running tests...'
+                    dir('TaskManagementSystem') {
+                        sh 'mvn test'
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                echo 'Publishing test results...'
+                dir('TaskManagementSystem') {
+                    junit '**/target/surefire-reports/*.xml'
+                }
+            }
+        }
+    }
+}

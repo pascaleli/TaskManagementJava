@@ -1,6 +1,7 @@
 package dev.pascal.TaskManagementSystem.security;
 
 import jakarta.servlet.http.HttpServletRequest;
+import dev.pascal.TaskManagementSystem.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@RequiredArgsConstructor
+
 public class AuthenticationController {
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -21,6 +22,7 @@ public class AuthenticationController {
         this.jwtUtil = jwtUtil;
         this.authenticationManager = authenticationManager;
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
