@@ -1,0 +1,44 @@
+pipeline {
+    agent any  // Runs on any available agent
+
+    environment {
+        DOCKER_IMAGE = 'maven:3.8.6-openjdk-17'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git' // Update with your repo
+            }
+        }
+
+        stage('Build and Test') {
+            agent {
+                docker {
+                    image "${DOCKER_IMAGE}"  // Use Maven + JDK Docker image
+                    args '-v $PWD:/workspace -w /workspace' // Mount workspace
+                }
+            }
+            steps {
+                script {
+                    sh 'mvn clean test'  // Run your Spring Boot tests
+                }
+            }
+        }
+
+        stage('Publish Test Reports') {
+            steps {
+                junit '**/target/surefire-reports/*.xml'  // Parse JUnit XML test results
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+        }
+        failure {
+            echo 'Tests failed! Check the logs.'
+        }
+    }
+}
