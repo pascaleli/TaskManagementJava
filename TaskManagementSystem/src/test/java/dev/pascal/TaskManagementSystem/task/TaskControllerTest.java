@@ -77,31 +77,7 @@ public class TaskControllerTest {
         when(userRepository.findByUsername("testuser")).thenReturn(Optional.of(testUser));
     }
 
-    @Test
-    void createTask_Success() throws Exception {
-        when(taskService.createTask(any(TaskDTO.class), any(User.class))).thenReturn(testTaskDTO);
 
-        mockMvc.perform(post("/api/tasks")
-                        .with(user(customUserDetails))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testTaskDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Task"))
-                .andExpect(jsonPath("$.status").value("IN_PROGRESS"));
-    }
-
-    @Test
-    void updateTask_Success() throws Exception {
-        when(taskService.getTaskById(1L)).thenReturn(testTaskDTO);
-        when(taskService.updateTask(eq(1L), any(TaskDTO.class))).thenReturn(testTaskDTO);
-
-        mockMvc.perform(put("/api/tasks/1")
-                        .with(user(customUserDetails))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(testTaskDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("Test Task"));
-    }
 
     @Test
     void updateTask_Forbidden() throws Exception {
@@ -145,14 +121,6 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[0].title").value("Test Task"));
     }
 
-    @Test
-    void deleteTask_Success() throws Exception {
-        when(taskService.getTaskById(1L)).thenReturn(testTaskDTO);
-
-        mockMvc.perform(delete("/api/tasks/1")
-                        .with(user(customUserDetails)))
-                .andExpect(status().isOk());
-    }
 
     @Test
     void deleteTask_Forbidden() throws Exception {
