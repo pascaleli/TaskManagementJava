@@ -12,44 +12,54 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                script {
+   script {
                     echo 'Cloning repository...'
-                    git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git'
-                }
+      git branch: 'main', url: 'https://github.com/pascaleli/TaskManagementJava.git' }
             }
         }
 
         stage('Build') {
             steps {
-                script {
+        script {
                     echo 'Moving into project directory: TaskManagementSystem'
-                    dir('TaskManagementSystem') {
+        dir('TaskManagementSystem') {
                         echo 'Running Maven Build...'
                         sh 'mvn clean package'
-                    }
+         }
                 }
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    echo 'Running tests...'
+      script {
+   echo 'Running tests...'
                     dir('TaskManagementSystem') {
                         sh 'mvn test'
-                    }
-                }
             }
-        }
     }
-
-    post {
+            }
+  }
+    }
+ post {
         always {
             script {
-                echo 'Publishing test results...'
+                echo '📢 Publishing test results...'
                 dir('TaskManagementSystem') {
                     junit '**/target/surefire-reports/*.xml'
                 }
+            }
+        }
+
+        failure {
+            script {
+                echo '❌ Build or tests failed!'
+            }
+        }
+
+        success {
+            script {
+                echo '✅ Build and tests passed successfully!'
             }
         }
     }
