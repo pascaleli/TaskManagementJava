@@ -6,7 +6,7 @@ pipeline {
     }
 
     triggers {
-        cron('H/2 * * * *') // Runs every 2 minutes
+        cron('H/2 * * * *')
     }
 
     stages {
@@ -49,14 +49,8 @@ pipeline {
                     junit '**/target/surefire-reports/*.xml'
                 }
             }
-        }
 
-        failure {
-            script {
-                echo '❌ Build or tests failed!'
-            }
         }
-
         success {
             script {
                 echo '✅ Build and tests passed successfully!'
