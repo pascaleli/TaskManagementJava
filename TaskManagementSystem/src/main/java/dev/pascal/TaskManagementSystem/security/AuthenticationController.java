@@ -34,7 +34,7 @@ public class AuthenticationController {
         String token = jwtUtil.generateToken(userDetails.getUsername());
         return ResponseEntity.ok(token);
     }
-    // ✅ New endpoint to return CSRF token
+    //  CSRF token
     @GetMapping("/csrf")
     public ResponseEntity<CsrfToken> getCsrfToken(HttpServletRequest request) {
         CsrfToken csrfToken = (CsrfToken) request.getAttribute(CsrfToken.class.getName());

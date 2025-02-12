@@ -20,7 +20,7 @@ public class CustomUserDetails implements UserDetails {
         this.password = user.getPassword();
     }
 
-    public Long getId() {  // This method allows us to access the user ID
+    public Long getId() {  // This method allows me to access the user ID
         return id;
     }
 
